@@ -33,7 +33,11 @@
   }
 }
 
-.card {
+.card1 {
+  padding: 2em;
+}
+
+.card2 {
   padding: 2em;
 }
 

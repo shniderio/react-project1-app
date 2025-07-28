@@ -60,18 +60,27 @@ function App() {
           <img src="https://www.thecocktaildb.com/images/media/drink/vrwquq1478252802.jpg/medium" className="logo react" alt="Drink Image" />
         </a>
       </div>
+
       <h1>Drinks and Stuff</h1>
-      <div className="card">
+      <div className="card1">
+        <h3>First 10 Gin Drinks</h3>
         <ul>
           {drink.slice(0,10).map((drink,index) =>(
             <li key={index}>{drink.strDrink}</li>
           ))}
         </ul>
+        
         <input 
-        type="text"
-        value={inputValue}
-        onChange={(event) => setInputValue(event.target.value)}
+          type="text"
+          value={inputValue}
+          onChange={(event) => setInputValue(event.target.value)}
+          onKeyUp={(event) => {
+            if(event.key === 'Enter'){
+              favoriteDrinks();
+            }
+          }}
         ></input>
+
         <button onClick={favoriteDrinks}>Ingredient Search</button>
         
         <ul>
@@ -79,7 +88,8 @@ function App() {
             <li key={index}>{drink}<input type="checkbox" onChange={()=>handleAddDrink(drink)} /></li>
           ))}
         </ul>
-        
+      </div>
+      <div className="card2">
         <h1>Favorite Drinks List</h1>
         <ol>
           {favoriteDrink.map((drink, index) => (
