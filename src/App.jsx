@@ -1,45 +1,63 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
   
   let [drink, setDrink] = useState([]);
-  let [favDrink, setFavDrink] = useState([]);
+  let [searchDrink, setSearchDrink] = useState([]);
   let [inputValue, setInputValue] = useState('');
-  let [checkboxValue, setCheckboxValue] = useState()
+  let [favoriteDrink, setFavoriteDrink] = useState(() => {
+    const localData = localStorage.getItem("favoriteDrink");
+    return localData ? JSON.parse(localData) : [];
+  });
 
-  let favoritDrinks = () => {
-    fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${inputValue}`)
-      .then(repsonse => repsonse.json())
+
+
+  let favoriteDrinks = () => {
+    fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${inputValue}`)
+      .then(response => response.json())
       .then(data => {
         let stuff = data.drinks.map(drink => drink.strDrink);
         // let stuff = data.drinks[0].strDrink
-        setFavDrink(stuff)
+        setSearchDrink(stuff)
         console.log(stuff)
       })
   }
   
 
   useEffect(() => {
-    fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita`)
+    fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=gin`)
       .then(response => response.json())
       .then(data => {
         let myDrink = data.drinks || [];
         setDrink(myDrink);
-        console.log(myDrink);
       });
   }, []);
+
+  function handleAddDrink(drink) {
+    if(!favoriteDrink.includes(drink)){
+    let addDrink = drink;
+      setFavoriteDrink([...favoriteDrink, addDrink]);
+      }
+  }
+  
+  function handleDeleteDrink(cocktail) {
+    let updateList = favoriteDrink.filter(drink => drink !== cocktail);
+    setFavoriteDrink(updateList);
+  }
+
+  useEffect(() => {
+    localStorage.setItem('favoriteDrink', JSON.stringify(favoriteDrink));
+  }, [favoriteDrink])
 
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+        <a>
+          <img src="https://www.thecocktaildb.com/images/ingredients/gin-medium.png" className="logo react" alt="Drink Image" />
         </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+        <a>
+          <img src="https://www.thecocktaildb.com/images/media/drink/vrwquq1478252802.jpg/medium" className="logo react" alt="Drink Image" />
         </a>
       </div>
       <h1>Drinks and Stuff</h1>
@@ -54,18 +72,24 @@ function App() {
         value={inputValue}
         onChange={(event) => setInputValue(event.target.value)}
         ></input>
-        <button onClick={favoritDrinks}>Favorite Drinks</button>
+        <button onClick={favoriteDrinks}>Ingredient Search</button>
         
         <ul>
-          {favDrink.map((drink,index) =>(
-            <li key={index}>{drink}<input type="checkbox" /></li>
+          {searchDrink.map((drink,index) =>(
+            <li key={index}>{drink}<input type="checkbox" onChange={()=>handleAddDrink(drink)} /></li>
           ))}
-          
         </ul>
         
+        <h1>Favorite Drinks List</h1>
+        <ol>
+          {favoriteDrink.map((drink, index) => (
+            <li key={index} > {drink}<input type="checkbox" onChange={()=>handleDeleteDrink(drink)} /></li>
+          ))}
+        </ol>
       </div>
     </>
   )
 }
 
 export default App
+
